@@ -42,6 +42,10 @@ class Caldera_Forms_Field_Input extends Caldera_Forms_Field_HTML{
 
 		$field_classes = Caldera_Forms_Field_Util::prepare_field_classes( $field, $form );
 		$mask = self::get_mask_string( $field );
+		if( ! empty( $mask ) ){
+			Caldera_Forms_Render_Assets::enqueue_script( 'inputmask' );
+		}
+
 		$place_holder = self::place_holder_string( $field );
 		$attrs = array(
 			'type' => $type,
@@ -58,7 +62,11 @@ class Caldera_Forms_Field_Input extends Caldera_Forms_Field_HTML{
 			$place_holder  = self::place_holder_string( $field, $field[ 'label' ] );
 		}
 
-		if( 'number' === $type ){
+		if('color_picker' === $type ){
+			$attrs[ 'class' ] = 'form-control minicolor-picker init_field_type miniColors';
+			$attrs[ 'type' ] = 'text';
+			$attrs[ 'data-type' ] = 'color_picker';
+		}elseif( 'number' === $type ){
 			foreach( array(
 				'min',
 				'max',
@@ -143,7 +151,7 @@ class Caldera_Forms_Field_Input extends Caldera_Forms_Field_HTML{
 		$mask = '';
 		if ( 'phone' != Caldera_Forms_Field_Util::get_type( $field ) ) {
 			if ( ! empty( $field[ 'config' ][ 'masked' ] ) ) {
-				$mask = "data-inputmask=\"'mask': '" . $field[ 'config' ][ 'mask' ] . "'\" ";
+				$mask = $field[ 'config' ][ 'mask' ];
 			}
 		} else {
 			$mask = '(999)999-9999';
@@ -152,6 +160,11 @@ class Caldera_Forms_Field_Input extends Caldera_Forms_Field_HTML{
 			}elseif ( $field['config']['type'] == 'custom' ) {
 				$mask = $field['config']['custom'];
 			}
+
+		}
+
+		if( ! empty( $mask ) ){
+			$mask = "data-inputmask=\"'mask': '" . $mask . "'\" ";
 		}
 
 		return $mask;
